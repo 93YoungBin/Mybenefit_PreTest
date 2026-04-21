@@ -22,6 +22,7 @@
   - Power Light(Image component): status 값에 따라 색상 변경
       - Active: 초록 (0, 255, 0)
       - Inactive: 빨강 (255, 0, 0)
+      - Power Light가  Inactive라면 아래 3. 핵심 비즈니스 로직이 동작하지 않고 4. 로그 시스템을 통해 로그 제출
 - 상품 목록(Canvas/Vending Machine/Body/ScrollView)
   - 프리팹: Assets/Prefabs/Vending Machine Item
   - 초기화: products 데이터를 기반으로 Vending Machine Item 게임 오브젝트 생성, 리스트 동적 생성 및 데이터 바인딩
@@ -32,7 +33,7 @@
 - 재화 획득 (Canvas/Optional/Editor)
   - 버튼 클릭 시 명시 된 금액 획득
   - 제약 조건
-    - Current Money(Text component) 최대 50,000원 제한
+    - Current Money(Text component) 최대 10,000원 제한
     - Current Money(Text component) 원본 string format 유지
 - 상품 구매
   - 상목 목록 - 초기화를 통해 생성 된 Item을 선택 시 금액 차감
