@@ -358,6 +358,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2766073265474969649}
   - component: {fileID: 1424807904976844027}
+  - component: {fileID: 1790025851519006529}
   m_Layer: 5
   m_Name: Vending Machine Item
   m_TagString: Untagged
@@ -414,6 +415,22 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1790025851519006529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3615630716402665080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 543b8b869470f0c48aae238eb00f1d2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProductView
+  nameText: {fileID: 8016499580889838529}
+  priceText: {fileID: 1625603052705614132}
+  stockText: {fileID: 6220406030451884127}
+  button: {fileID: 0}
 --- !u!1 &3625787231043072277
 GameObject:
   m_ObjectHideFlags: 0

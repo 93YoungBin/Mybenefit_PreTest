@@ -1,3 +1,5 @@
+using System;
+
 public class Product
 {
     public int Id { get; }
@@ -5,6 +7,9 @@ public class Product
     public string Type { get; }
     public int Price { get; }
     public int Stock { get; private set; }
+
+    public event Action OnStockChanged;
+    public event Action OnOutOfStock;
 
     public bool IsInStock
     {
@@ -28,6 +33,12 @@ public class Product
         if (Stock > 0)
         { 
             Stock--;
+            OnStockChanged?.Invoke();
+
+            if (Stock == 0)
+            { 
+                OnOutOfStock?.Invoke();
+            }
         }
     }
 }
