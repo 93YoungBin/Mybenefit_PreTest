@@ -31,26 +31,27 @@ public class VendingMachineController : MonoBehaviour
         _dataLoader = new DataLoader();
     }
 
+    private void OnEnable()
+    {
+        EventBus.Subscribe<MoneyChangedEvent>(OnMoneyChanged);
+        EventBus.Subscribe<ProductPurchasedEvent>(OnProductPurchased);
+    }
+
+    private void OnDisable()
+    {
+        EventBus.Unsubscribe<MoneyChangedEvent>(OnMoneyChanged);
+        EventBus.Unsubscribe<ProductPurchasedEvent>(OnProductPurchased);
+    }
+
     private void Start()
     {
         StartCoroutine(_dataLoader.Co_Load(OnLoadSuccess, OnLoadFail));
     }
 
-    private void OnDestroy()
-    {
-        if (_machine == null)
-        {
-            return;
-        }
-
-        _machine.OnMoneyChanged -= UpdateMoneyText;
-        _machine.OnProductPurchased -= OnProductPurchased;
-        _machine.OnInactiveAccess -= OnInactiveAccess;
-    }
-
     private void OnLoadSuccess(MachineData data)
     {
         _machine = new VendingMachine(data);
+
         _beveragePool = new ObjectPool<BeverageView>(
             createFunc: () => Instantiate(beveragePrefab, inventoryContent),
             actionOnGet: view => view.gameObject.SetActive(true),
@@ -59,10 +60,8 @@ public class VendingMachineController : MonoBehaviour
             defaultCapacity: 5
         );
 
-        SubscribeEvents();
-
         InitTopPanel();
-
+        InitMoneyButtons();
         InitProductList();
     }
 
@@ -71,23 +70,15 @@ public class VendingMachineController : MonoBehaviour
         Debug.LogError($"[VendingMachineController] {error}");
     }
 
-    private void SubscribeEvents()
-    {
-        _machine.OnMoneyChanged += UpdateMoneyText;
-        _machine.OnProductPurchased += OnProductPurchased;
-        _machine.OnInactiveAccess += OnInactiveAccess;
-    }
-
     private void InitTopPanel()
     {
         machineIdText.text = _machine.MachineId;
-        currentMoneyText.text = $"{_machine.CurrentMoney:N0} won";
+
+        currentMoneyText.text = $"{_machine.CurrentMoney:N0} Won";
 
         powerLight.color = _machine.Status == MachineStatus.Active
             ? new Color32(0, 255, 0, 255)
             : new Color32(255, 0, 0, 255);
-
-        InitMoneyButtons();
     }
 
     private void InitMoneyButtons()
@@ -95,6 +86,7 @@ public class VendingMachineController : MonoBehaviour
         for (int i = 0; i < moneyButtons.Length; i++)
         {
             int amount = moneyAmounts[i];
+
             moneyButtons[i].onClick.RemoveAllListeners();
             moneyButtons[i].onClick.AddListener(() => _machine.AddMoney(amount));
         }
@@ -105,6 +97,7 @@ public class VendingMachineController : MonoBehaviour
         foreach (Product product in _machine.Products)
         {
             ProductView view = Instantiate(productItemPrefab, productListContent);
+
             view.Bind(product, OnProductClicked);
         }
     }
@@ -114,24 +107,22 @@ public class VendingMachineController : MonoBehaviour
         _machine.Purchase(product);
     }
 
-    private void UpdateMoneyText(int money)
+    private void OnMoneyChanged(MoneyChangedEvent e)
     {
-        currentMoneyText.text = $"{money:N0} won";
+        currentMoneyText.text = $"{e.Amount:N0} Won";
     }
 
-    private void OnProductPurchased(Product product)
+    private void OnProductPurchased(ProductPurchasedEvent e)
     {
         BeverageView view = _beveragePool.Get();
-        view.Bind(product, OnBeverageClicked);
+
+        view.Bind(e.Product, OnBeverageClicked);
     }
 
     private void OnBeverageClicked(BeverageView view, Product product)
     {
-        _beveragePool.Release(view);
-    }
+        EventBus.Publish(new BeverageConsumedEvent { Product = product });
 
-    private void OnInactiveAccess()
-    {
-        
+        _beveragePool.Release(view);
     }
 }

@@ -14,11 +14,7 @@ public class VendingMachine
     public int CurrentMoney { get; private set; }
     public IReadOnlyList<Product> Products { get; }
 
-    private const int MaxMoney = 10000;
-
-    public event Action<int> OnMoneyChanged;
-    public event Action<Product> OnProductPurchased;
-    public event Action OnInactiveAccess;
+    private const int MaxMoney = 10_000;
 
     public VendingMachine(MachineData data)
     {
@@ -31,7 +27,7 @@ public class VendingMachine
         List<Product> products = new List<Product>();
 
         foreach (ProductData productData in data.products)
-        { 
+        {
             products.Add(new Product(productData));
         }
 
@@ -42,13 +38,14 @@ public class VendingMachine
     {
         if (Status == MachineStatus.Inactive)
         {
-            OnInactiveAccess?.Invoke();
+            EventBus.Publish(new InactiveAccessEvent());
             return false;
         }
 
         CurrentMoney = Math.Min(CurrentMoney + amount, MaxMoney);
 
-        OnMoneyChanged?.Invoke(CurrentMoney);
+        EventBus.Publish(new MoneyAddedEvent { Amount = CurrentMoney });
+        EventBus.Publish(new MoneyChangedEvent { Amount = CurrentMoney });
 
         return true;
     }
@@ -57,7 +54,7 @@ public class VendingMachine
     {
         if (Status == MachineStatus.Inactive)
         {
-            OnInactiveAccess?.Invoke();
+            EventBus.Publish(new InactiveAccessEvent());
             return false;
         }
 
@@ -75,9 +72,8 @@ public class VendingMachine
 
         product.DeductStock();
 
-        OnProductPurchased?.Invoke(product);
-
-        OnMoneyChanged?.Invoke(CurrentMoney);
+        EventBus.Publish(new ProductPurchasedEvent { Product = product });
+        EventBus.Publish(new MoneyChangedEvent { Amount = CurrentMoney });
 
         return true;
     }
