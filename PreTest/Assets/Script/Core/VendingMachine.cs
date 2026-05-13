@@ -42,6 +42,12 @@ public class VendingMachine
             return false;
         }
 
+        if (CurrentMoney >= MaxMoney)
+        {
+            EventBus.Publish(new SystemNotificationEvent { Message = "Max Money" });
+            return false;
+        }
+
         CurrentMoney = Math.Min(CurrentMoney + amount, MaxMoney);
 
         EventBus.Publish(new MoneyAddedEvent { Amount = CurrentMoney });
@@ -60,17 +66,24 @@ public class VendingMachine
 
         if (!product.IsInStock)
         {
+            EventBus.Publish(new SystemNotificationEvent { Message = $"SOLD OUT : {product.Name}" });
             return false;
         }
 
         if (CurrentMoney < product.Price)
         {
+            EventBus.Publish(new SystemNotificationEvent { Message = "Need More Money." });
             return false;
         }
 
         CurrentMoney -= product.Price;
 
         product.DeductStock();
+
+        if (!product.IsInStock)
+        {
+            EventBus.Publish(new ProductSoldOutEvent { Product = product });
+        }
 
         EventBus.Publish(new ProductPurchasedEvent { Product = product });
         EventBus.Publish(new MoneyChangedEvent { Amount = CurrentMoney });

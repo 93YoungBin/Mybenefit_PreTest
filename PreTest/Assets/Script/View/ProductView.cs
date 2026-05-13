@@ -1,18 +1,22 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class ProductView : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI priceText;
     [SerializeField] private TextMeshProUGUI stockText;
+    [SerializeField] private Image productImage;
 
     private Action<Product> _onClickCallback;
     private Product _product;
+    private Coroutine _imageCoroutine;
 
-    public void Bind(Product product, Action<Product> onClickCallback)
+    public void Bind(Product product, Action<Product> onClickCallback, IResourceLoader<Sprite> imageLoader = null)
     {
         if (_product != null)
         {
@@ -29,9 +33,11 @@ public class ProductView : MonoBehaviour, IPointerClickHandler
         UpdateDisplay();
 
         if (!_product.IsInStock)
-        { 
+        {
             ShowOutOfStock();
         }
+
+        LoadImage(imageLoader);
     }
 
     private void UpdateDisplay()
@@ -43,7 +49,38 @@ public class ProductView : MonoBehaviour, IPointerClickHandler
 
     private void ShowOutOfStock()
     {
-        // «∞¿˝ ∞¸∑√ ¿Ã∫•∆Æ √ﬂ»ƒ √≥∏Æ
+        //Ï∂îÌõÑ ÌíàÏ†à Í¥ÄÎ†® Ï≤òÎ¶¨ Ï†ÅÏö© ÏòàÏ†ï
+    }
+
+    private void LoadImage(IResourceLoader<Sprite> imageLoader)
+    {
+        if (imageLoader == null || productImage == null)
+        {
+            return;
+        }
+
+        if (_imageCoroutine != null)
+        {
+            StopCoroutine(_imageCoroutine);
+        }
+
+        _imageCoroutine = StartCoroutine(imageLoader.Co_Load(_product.ImageUrl, OnImageLoaded, OnImageLoadFailed));
+    }
+
+    private void OnImageLoaded(Sprite sprite)
+    {
+        if (productImage != null)
+        {
+            productImage.sprite = sprite;
+        }
+
+        _imageCoroutine = null;
+    }
+
+    private void OnImageLoadFailed(string error)
+    {
+        Debug.Log(error);
+        _imageCoroutine = null;
     }
 
     public void OnPointerClick(PointerEventData eventData)

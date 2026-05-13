@@ -5,6 +5,7 @@ public class Product
     public int Id { get; }
     public string Name { get; }
     public string Type { get; }
+    public string ImageUrl { get; }
     public int Price { get; }
     public int Stock { get; private set; }
 
@@ -26,6 +27,7 @@ public class Product
         Price = data.price;
         Stock = data.stock;
         Type = data.type;
+        ImageUrl = data.imageUrl;
     }
 
     internal void DeductStock()

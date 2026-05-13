@@ -18,4 +18,14 @@ public struct BeverageConsumedEvent
     public Product Product;
 }
 
+public struct ProductSoldOutEvent
+{
+    public Product Product;
+}
+
 public struct InactiveAccessEvent { }
+
+public struct SystemNotificationEvent
+{
+    public string Message;
+}

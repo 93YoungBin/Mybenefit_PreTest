@@ -430,7 +430,8 @@ MonoBehaviour:
   nameText: {fileID: 8016499580889838529}
   priceText: {fileID: 1625603052705614132}
   stockText: {fileID: 6220406030451884127}
-  button: {fileID: 0}
+  productImage: {fileID: 5251592818193533136}
+  placeholderSprite: {fileID: 0}
 --- !u!1 &3625787231043072277
 GameObject:
   m_ObjectHideFlags: 0

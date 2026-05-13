@@ -20,9 +20,4 @@ public class BeverageView : MonoBehaviour
 
         button.onClick.AddListener(() => _onClickCallback?.Invoke(this, product));
     }
-
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-    }
 }

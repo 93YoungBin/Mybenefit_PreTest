@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Pool;
+using System;
 
 public class VendingMachineController : MonoBehaviour
 {
@@ -22,13 +23,18 @@ public class VendingMachineController : MonoBehaviour
     [SerializeField] private Transform inventoryContent;
     [SerializeField] private BeverageView beveragePrefab;
 
-    private IDataLoader _dataLoader;
+    [Header("Data")]
+    [SerializeField] private string _jsonName = "Items";
+
+    private IResourceLoader<MachineData> _dataLoader;
+    private IResourceLoader<Sprite> _imageLoader;
     private VendingMachine _machine;
     private ObjectPool<BeverageView> _beveragePool;
 
     private void Awake()
     {
         _dataLoader = new DataLoader();
+        _imageLoader = new ResourcesImageLoader();
     }
 
     private void OnEnable()
@@ -45,7 +51,7 @@ public class VendingMachineController : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(_dataLoader.Co_Load(OnLoadSuccess, OnLoadFail));
+        StartCoroutine(_dataLoader.Co_Load(_jsonName, OnLoadSuccess, OnLoadFail));
     }
 
     private void OnLoadSuccess(MachineData data)
@@ -67,14 +73,14 @@ public class VendingMachineController : MonoBehaviour
 
     private void OnLoadFail(string error)
     {
-        Debug.LogError($"[VendingMachineController] {error}");
+        Debug.LogError($"VendingMachineController Load Fail : {error}");
     }
 
     private void InitTopPanel()
     {
         machineIdText.text = _machine.MachineId;
 
-        currentMoneyText.text = $"{_machine.CurrentMoney:N0} Won";
+        currentMoneyText.text = $"money : {_machine.CurrentMoney:N0} won";
 
         powerLight.color = _machine.Status == MachineStatus.Active
             ? new Color32(0, 255, 0, 255)
@@ -83,7 +89,16 @@ public class VendingMachineController : MonoBehaviour
 
     private void InitMoneyButtons()
     {
-        for (int i = 0; i < moneyButtons.Length; i++)
+        int count = moneyButtons.Length;
+
+        if (moneyButtons.Length != moneyAmounts.Length)
+        {
+            Debug.LogWarning($"MoneyButton Error : {moneyButtons.Length} / {moneyAmounts.Length}");
+
+            count = Math.Min(moneyButtons.Length, moneyAmounts.Length);
+        }
+
+        for (int i = 0; i < count; i++)
         {
             int amount = moneyAmounts[i];
 
@@ -98,7 +113,7 @@ public class VendingMachineController : MonoBehaviour
         {
             ProductView view = Instantiate(productItemPrefab, productListContent);
 
-            view.Bind(product, OnProductClicked);
+            view.Bind(product, OnProductClicked, _imageLoader);
         }
     }
 
@@ -109,7 +124,7 @@ public class VendingMachineController : MonoBehaviour
 
     private void OnMoneyChanged(MoneyChangedEvent e)
     {
-        currentMoneyText.text = $"{e.Amount:N0} Won";
+        currentMoneyText.text = $"money : {e.Amount:N0} won";
     }
 
     private void OnProductPurchased(ProductPurchasedEvent e)
