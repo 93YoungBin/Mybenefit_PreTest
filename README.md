@@ -26,7 +26,7 @@
       - Power Light가  Inactive라면 아래 3. 핵심 비즈니스 로직이 동작하지 않고 4. 로그 시스템을 통해 로그 제출
 - 상품 목록(Canvas/Vending Machine/Body/ScrollView)
   - 프리팹: Assets/Prefabs/Vending Machine Item
-  - 초기화: products 데이터를 기반으로 Vending Machine Item 게임 오브젝트 생성, 리스트 동적 생성 및 데이터 바인딩
+  - 초기화: products 데이터를 기반으로 Vending Machine Item 게임 오브젝트 생성, 리스트 동적 생성 및 데이터, Resource 폴더 내 이미지 바인딩
   - 제약 조건: 가격 및 잔여 갯수의 원본 string format 유지
 
 ---
