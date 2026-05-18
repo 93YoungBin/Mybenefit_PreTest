@@ -14,7 +14,7 @@ public class VendingMachine
     public int CurrentMoney { get; private set; }
     public IReadOnlyList<Product> Products { get; }
 
-    private const int MaxMoney = 10_000;
+    private const int MaxMoney = 10000;
 
     public VendingMachine(MachineData data)
     {

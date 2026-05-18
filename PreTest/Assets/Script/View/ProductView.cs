@@ -16,7 +16,7 @@ public class ProductView : MonoBehaviour, IPointerClickHandler
     private Product _product;
     private Coroutine _imageCoroutine;
 
-    public void Bind(Product product, Action<Product> onClickCallback, IResourceLoader<Sprite> imageLoader = null)
+    public void Bind(Product product, Action<Product> onClickCallback, IResourceLoader<Sprite> imageLoader = null, bool useUrl = true)
     {
         if (_product != null)
         {
@@ -37,7 +37,7 @@ public class ProductView : MonoBehaviour, IPointerClickHandler
             ShowOutOfStock();
         }
 
-        LoadImage(imageLoader);
+        LoadImage(imageLoader, useUrl);
     }
 
     private void UpdateDisplay()
@@ -49,10 +49,10 @@ public class ProductView : MonoBehaviour, IPointerClickHandler
 
     private void ShowOutOfStock()
     {
-        //추후 품절 관련 처리 적용 예정
+        // 품절 관련 처리가 필요할 경우 이 함수 사용
     }
 
-    private void LoadImage(IResourceLoader<Sprite> imageLoader)
+    private void LoadImage(IResourceLoader<Sprite> imageLoader, bool useUrl = true)
     {
         if (imageLoader == null || productImage == null)
         {
@@ -64,7 +64,9 @@ public class ProductView : MonoBehaviour, IPointerClickHandler
             StopCoroutine(_imageCoroutine);
         }
 
-        _imageCoroutine = StartCoroutine(imageLoader.Co_Load(_product.ImageUrl, OnImageLoaded, OnImageLoadFailed));
+        string usePath = useUrl ? _product.ImageUrl : _product.Name;
+
+        _imageCoroutine = StartCoroutine(imageLoader.Co_Load(usePath, OnImageLoaded, OnImageLoadFailed));
     }
 
     private void OnImageLoaded(Sprite sprite)

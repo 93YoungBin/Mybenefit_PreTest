@@ -25,6 +25,7 @@ public class VendingMachineController : MonoBehaviour
 
     [Header("Data")]
     [SerializeField] private string _jsonName = "Items";
+    [SerializeField] private bool _imageLoadByUrl = false;
 
     private IResourceLoader<MachineData> _dataLoader;
     private IResourceLoader<Sprite> _imageLoader;
@@ -113,7 +114,7 @@ public class VendingMachineController : MonoBehaviour
         {
             ProductView view = Instantiate(productItemPrefab, productListContent);
 
-            view.Bind(product, OnProductClicked, _imageLoader);
+            view.Bind(product, OnProductClicked, _imageLoader, _imageLoadByUrl);
         }
     }
 

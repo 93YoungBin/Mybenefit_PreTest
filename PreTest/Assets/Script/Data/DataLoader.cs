@@ -14,7 +14,7 @@ public class DataLoader : IResourceLoader<MachineData>
 
         if (json == null)
         {
-            onFail?.Invoke($"File Don't Exist: {path}");
+            onFail?.Invoke($"File Not Found: {path}");
             yield break;
         }
 
